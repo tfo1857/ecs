@@ -1,5 +1,7 @@
 {
   "family": "my-ecs-task-definition",
+  "cpu": "2048",
+  "memory": "6144",
   "containerDefinitions": [
     {
       "name": "wordpress",
