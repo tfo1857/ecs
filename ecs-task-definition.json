@@ -2,8 +2,8 @@
   "family": "my-ecs-task-definition",
   "cpu": "2048",
   "memory": "6144",
-  "compatibilities": ["EC2", "FARGATE"],
   "requiresCompatibilities": ["FARGATE"],
+  "networkMode": "awsvpc",
   "containerDefinitions": [
     {
       "name": "wordpress",
