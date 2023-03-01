@@ -1,0 +1,63 @@
+{
+  "family": "my-ecs-task-definition",
+  "containerDefinitions": [
+    {
+      "name": "wordpress",
+      "image": "bitnami/wordpress",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "WORDPRESS_DB_HOST",
+          "value": "my-rds-instance.us-east-1.rds.amazonaws.com:3306"
+        },
+        {
+          "name": "WORDPRESS_DB_NAME",
+          "value": "my-wordpress-db"
+        },
+        {
+          "name": "WORDPRESS_DB_USER",
+          "value": "my-wordpress-user"
+        },
+        {
+          "name": "WORDPRESS_DB_PASSWORD",
+          "value": "my-wordpress-password"
+        }
+      ]
+    },
+    {
+      "name": "mysql",
+      "image": "mysql:5.7",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3306,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "MYSQL_ROOT_PASSWORD",
+          "value": "my-mysql-password"
+        },
+        {
+          "name": "MYSQL_DATABASE",
+          "value": "my-wordpress-db"
+        },
+        {
+          "name": "MYSQL_USER",
+          "value": "my-wordpress-user"
+        },
+        {
+          "name": "MYSQL_PASSWORD",
+          "value": "my-wordpress-password"
+        }
+      ]
+    }
+  ]
+}

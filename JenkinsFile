@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+
+    environment {
+        AWS_REGION = 'us-east-1'
+        AWS_ACCESS_KEY_ID = credentials('aws-access-key')
+        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')
+        ECS_CLUSTER = 'my-ecs-cluster'
+        ECS_SERVICE = 'my-ecs-service'
+        ECS_TASK_DEFINITION = 'my-ecs-task-definition'
+    }
+
+    stages {
+        stage('Build and push Docker image') {
+            steps {
+                // Build the Docker image of the WordPress application
+                sh 'docker build -t my-wordpress-image .'
+
+                // Log in to Amazon ECR
+                withAWS(credentials: [
+                    awsAccessKey(credentialsId: 'aws-access-key', permission: 'AWS_ACCESS_KEY_ID'),
+                    awsSecretKey(credentialsId: 'aws-secret-key', permission: 'AWS_SECRET_ACCESS_KEY')
+                ], region: AWS_REGION) {
+                    sh 'aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${aws_account_id}.dkr.ecr.${AWS_REGION}.amazonaws.com'
+                }
+
+                // Tag and push the Docker image to Amazon ECR
+                sh "docker tag my-wordpress-image ${aws_account_id}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-wordpress-image:latest"
+                sh "docker push ${aws_account_id}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-wordpress-image:latest"
+            }
+        }
+
+        stage('Deploy to AWS ECS') {
+            steps {
+                // Register a new task definition with the new Docker image
+                sh 'envsubst < ecs-task-definition-template.json > ecs-task-definition.json'
+                withCredentials([string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh 'aws ecs register-task-definition --cli-input-json file://ecs-task-definition.json'
+                }
+
+                // Update the AWS ECS service to use the new task definition
+                withCredentials([string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh "aws ecs update-service --cluster ${ECS_CLUSTER} --service ${ECS_SERVICE} --task-definition ${ECS_TASK_DEFINITION}"
+                }
+            }
+        }
+    }
+}
