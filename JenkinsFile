@@ -22,7 +22,7 @@ pipeline {
 
                 // Update the AWS ECS service to use the new task definition
                 withCredentials([string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    sh "aws ecs update-service --cluster ${ECS_CLUSTER} --service ${ECS_SERVICE} --task-definition ${ECS_TASK_DEFINITION}"
+                    sh "aws ecs update-service --cluster ${ECS_CLUSTER} --service ${ECS_SERVICE} --region $AWS_REGION --task-definition ${ECS_TASK_DEFINITION}"
                 }
             }
         }
