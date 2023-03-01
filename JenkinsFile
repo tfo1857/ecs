@@ -18,7 +18,7 @@ pipeline {
                 // Register a new task definition with the new Docker image
                 //sh 'envsubst < ecs-task-definition-template.json > ecs-task-definition.json'
                 withCredentials([string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    sh 'envsubst < ecs-task-definition.json'
+                    sh 'envsubst < ecs-task-definition-template.json > ecs-task-definition.json'
                     sh 'aws ecs register-task-definition --region $AWS_REGION --cli-input-json file://ecs-task-definition.json'
                 }
 
