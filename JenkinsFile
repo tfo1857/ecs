@@ -9,6 +9,7 @@ pipeline {
         ECS_SERVICE = 'my-ecs-service'
         ECS_TASK_DEFINITION = 'my-ecs-task-definition'
         JENKINS_VAR = 'test123'
+        CONTAINERPORT = '80'
     }
 
     stages {
