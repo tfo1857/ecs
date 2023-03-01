@@ -11,24 +11,6 @@ pipeline {
     }
 
     stages {
-        stage('Build and push Docker image') {
-            steps {
-                // Build the Docker image of the WordPress application
-                sh 'docker build -t my-wordpress-image .'
-
-                // Log in to Amazon ECR
-                withAWS(credentials: [
-                    awsAccessKey(credentialsId: 'aws-access-key', permission: 'AWS_ACCESS_KEY_ID'),
-                    awsSecretKey(credentialsId: 'aws-secret-key', permission: 'AWS_SECRET_ACCESS_KEY')
-                ], region: AWS_REGION) {
-                    sh 'aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${aws_account_id}.dkr.ecr.${AWS_REGION}.amazonaws.com'
-                }
-
-                // Tag and push the Docker image to Amazon ECR
-                sh "docker tag my-wordpress-image ${aws_account_id}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-wordpress-image:latest"
-                sh "docker push ${aws_account_id}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-wordpress-image:latest"
-            }
-        }
 
         stage('Deploy to AWS ECS') {
             steps {
