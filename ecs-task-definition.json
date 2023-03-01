@@ -32,6 +32,10 @@
         {
           "name": "WORDPRESS_DB_PASSWORD",
           "value": "my-wordpress-password"
+        },
+        {
+          "name": "Jenkins_var",
+          "value": "${JENKINS_VAR}"
         }
       ],
       "logConfiguration": {
